@@ -5,17 +5,17 @@ internal final class Folder: @unchecked Sendable {
     enum FileError : Error, CustomStringConvertible {
         var description: String {
             switch self {
-                case .fileNotFound: return "Folder is invalid or missing"
-                case .permissionError: return "Invalid permissions to enumerate files of this folder"
-                case .notAFolder: return "The specified path is not a directory"
+                case let .fileNotFound(pathname): return "Folder \(pathname) is invalid or missing"
+                case let .permissionError(pathname): return "Invalid permissions to enumerate files of this folder \(pathname)"
+                case let .notAFolder(pathname): return "The specified path \(pathname) is not a directory"
             }
         }
         /// Permission file error
-        case permissionError
+        case permissionError(at:String)
         /// Missing file
-        case fileNotFound
+        case fileNotFound(at:String)
         /// Not a directory
-        case notAFolder
+        case notAFolder(at:String)
     }
     
     /// File count of the file print out
@@ -32,10 +32,10 @@ internal final class Folder: @unchecked Sendable {
         }
     }
     
-    let fileManager = FileManager()
+    let fileManager = FileManager.default
 
     /// the current working directory
-    var currentPath : String {
+    var currentPath: String {
         fileManager.currentDirectoryPath
     }  
 
@@ -46,14 +46,14 @@ internal final class Folder: @unchecked Sendable {
         var isDir: ObjCBool = false
         let fileExists = fileManager.fileExists(atPath: path, isDirectory: &isDir)
         switch (fileExists, Bool(String(describing:isDir))) {
-            case (false, false): throw FileError.fileNotFound
-            case (true, false): throw FileError.notAFolder
-            case (false, true): throw FileError.fileNotFound
+            case (false, false): throw FileError.fileNotFound(at:path)
+            case (true, false): throw FileError.notAFolder(at: path)
+            case (false, true): throw FileError.fileNotFound(at:path)
             case (true, true): break
             default: break
         }
         guard fileManager.changeCurrentDirectoryPath(path) else {
-            throw FileError.permissionError
+            throw FileError.permissionError(at: path)
         }
     }
     
@@ -63,7 +63,7 @@ internal final class Folder: @unchecked Sendable {
     func crawlFolder() throws -> [String] {
         let paths = try? fileManager.contentsOfDirectory(atPath: currentPath)
         guard let paths, !paths.isEmpty else {
-            throw FileError.permissionError
+            throw FileError.permissionError(at: currentPath)
         }
         return paths        
     }
@@ -76,7 +76,7 @@ internal final class Folder: @unchecked Sendable {
     func crawlFolder(path: String) throws -> [String] {  
         let paths = try? fileManager.subpathsOfDirectory(atPath: path)
         guard let paths else {
-            throw FileError.permissionError
+            throw FileError.permissionError(at: path)
         } 
         return paths.map {
             path + "/" + $0
@@ -91,7 +91,7 @@ internal final class Folder: @unchecked Sendable {
     func crawlRoot() throws -> [String] {
         let paths = try? fileManager.contentsOfDirectory(atPath: "/")
         guard let paths, !paths.isEmpty else {
-            throw FileError.permissionError
+            throw FileError.permissionError(at: "/")
         }
         return paths.map {
             "/" + $0
@@ -148,5 +148,7 @@ internal final class Folder: @unchecked Sendable {
 
 
 }
-                
+
+
+         
 extension FileManager : @unchecked Sendable {} 

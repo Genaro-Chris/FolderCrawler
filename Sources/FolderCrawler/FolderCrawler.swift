@@ -31,54 +31,54 @@ struct FolderCrawler : AsyncParsableCommand, @unchecked Sendable {
         if path.isEmpty {
             path = FileManager.default.currentDirectoryPath
         }
-        if path != folder.currentPath {
-            print("About to change to \(path)")
-            try folder.changeDirectory(to: path)
-        }
+
         if !exclude.isEmpty {
             do {
                 try Folder().changeDirectory(to: exclude)
             } catch {
-                FolderCrawler.exit(withError: error)
+                Self.exit(withError: error)
             }
-            
+
+            exclude = String(URL(fileURLWithPath: exclude).absoluteString.trimmingPrefix("file://"))
         }
+        
+        if path != folder.currentPath {
+            print("About to change to \(path)")
+            try folder.changeDirectory(to: path)
+        }
+   
         print("About to search \(folder.currentPath) directory", subDir ? "with its subdirectories" : "", exclude.isEmpty ? "" : "excluding \(exclude) and all its subdirectories")
 
         if (path == "/" && subDir) {   
             try await FolderCrawler.forRoot(folder: folder, dataSize: dataSize, size: size, exclude: exclude)
             return  
         }
-    
+
+        let result: [(Size, String, Double)]
+
         if (path == "/run" && subDir) {
             var paths = try folder.crawlFolder()
             if !exclude.isEmpty {
-                paths.removeAll {
-                    $0.starts(with: URL(fileURLWithPath: exclude).absoluteString.trimmingPrefix("file://")) 
-                }
+                paths = Self.filterOut(paths, exclude: exclude)
             }
-            let results = folder.findSize(subpaths: paths)
-            Self.listItems(of: size, dataSize: dataSize, folder: folder, result: results)
+            result = folder.findSize(subpaths: paths)
+            Self.listItems(of: size, dataSize: dataSize, folder: folder, result: result)
             return
         }
         if subDir {
             var paths = try folder.crawlFolder(path: folder.currentPath)
             if !exclude.isEmpty {
-                paths.removeAll {
-                    let fullpath = URL(fileURLWithPath: exclude).absoluteString.trimmingPrefix("file://")
-                    return $0.starts(with: URL(fileURLWithPath: exclude).absoluteString.trimmingPrefix("file://")) || $0 == fullpath
-                }
+               paths = Self.filterOut(paths, exclude: exclude)
             }
-            Self.listItems(of: size, dataSize: dataSize, folder: folder, result: folder.findSize(subpaths: paths))
+            result = folder.findSize(subpaths: paths)
+            Self.listItems(of: size, dataSize: dataSize, folder: folder, result: result)
         } else {
             var paths = try folder.crawlFolder()
             if !exclude.isEmpty {
-                paths.removeAll {
-                    let fullpath = URL(fileURLWithPath: exclude).absoluteString.trimmingPrefix("file://")
-                    return $0.starts(with: URL(fileURLWithPath: exclude).absoluteString.trimmingPrefix("file://")) || $0 == fullpath
-                }
+               paths = Self.filterOut(paths, exclude: exclude)
             }
-            Self.listItems(of: size, dataSize: dataSize, folder: folder, result: folder.findSize(subpaths: paths))
+            result = folder.findSize(subpaths: paths)
+            Self.listItems(of: size, dataSize: dataSize, folder: folder, result: result)
         }
     } 
     
@@ -97,11 +97,7 @@ struct FolderCrawler : AsyncParsableCommand, @unchecked Sendable {
                             return []
                         }   
                         if !exclude.isEmpty {
-                            runpath.removeAll {
-                                let fullpath = URL(fileURLWithPath: exclude).absoluteString.trimmingPrefix("file://")
-                                return $0.starts(with: URL(fileURLWithPath: exclude).absoluteString.trimmingPrefix("file://")) || $0 == fullpath
-                            }
-                            return fold.findSize(subpaths: runpath)
+                            runpath = filterOut(runpath, exclude: exclude)
                         }
                         return fold.findSize(subpaths: runpath)
                     }
@@ -114,11 +110,7 @@ struct FolderCrawler : AsyncParsableCommand, @unchecked Sendable {
                             return []
                         }  
                         if !exclude.isEmpty {
-                            paths.removeAll {
-                                let fullpath = URL(fileURLWithPath: exclude).absoluteString.trimmingPrefix("file://")
-                                return $0.starts(with: URL(fileURLWithPath: exclude).absoluteString.trimmingPrefix("file://")) || $0 == fullpath
-                            }
-                            return fold.findSize(subpaths: paths)
+                            paths = filterOut(paths, exclude: exclude)
                         }
                         return fold.findSize(subpaths: paths)
                     }
@@ -130,10 +122,15 @@ struct FolderCrawler : AsyncParsableCommand, @unchecked Sendable {
         }
     }
 
-    static 
-    func listItems(of size: Double, dataSize: Size, folder: Folder, result: [(Size,String,Double)])  {
+    static func filterOut(_ list: [String], exclude: String) -> [String] {
+        list.compactMap {
+            return $0.hasPrefix(exclude) || $0 == exclude ? nil : $0
+        }
+    }
+
+    static func listItems(of size: Double, dataSize: Size, folder: Folder, result: [(Size, String, Double)])  {
         if dataSize != .unbounded  {
-            folder.listFolderItems(size,of: result) { sizetype, _, _  in
+            folder.listFolderItems(size, of: result) { sizetype, _, _  in
                 dataSize == sizetype
             } 
         } else { 

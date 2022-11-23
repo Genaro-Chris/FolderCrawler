@@ -8,7 +8,7 @@ let package = Package(
     dependencies: [
         // Dependencies declare other packages that this package depends on.
         // .package(url: /* package url */, from: "1.0.0"),
-        .package(name: "SignalHandler", path: "/home/genaro/Languages/Swift/cache/SignalHandler"),
+        .package(url: "https://github.com/Genaro-Chris/SignalHandler", branch: "main"),
         .package(url: "https://github.com/apple/swift-argument-parser", from: "1.0.0"),
     ],
     targets: [

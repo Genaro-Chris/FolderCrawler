@@ -34,6 +34,7 @@ Example
 
 ``/path/to/FolderCrawler/.build/release  ~/ --subpaths --ds mb --size 100 --exclude ~/Downloads``
 
+This preceding example will list out files in the current user home directory and its subdirectories filtering out only files of 100 megabytes and above while removing files from the downloads folder
 
 ## Features
 

@@ -18,7 +18,7 @@ Swift 5.7 or higher.
 ## Building
 Change your working directory to the root of the FolderCrawler directory
 
-``cd /path/to/FolderCrawler``
+``cd /path/to/FolderCrawler/``
 
 Run this command and wait for it to finish, to compile it for release mode
 
@@ -32,7 +32,7 @@ After compilation, just run it with the ``-h`` or ``--help`` flag to see the ful
 
 Example
 
-``/path/to/FolderCrawler/.build/release  ~/ --subpaths --ds mb --size 100 --exclude ~/Downloads``
+``/path/to/FolderCrawler ~/ --subpaths --ds mb --size 100 --exclude ~/Downloads``
 
 This preceding example will list out files in the current user home directory and its subdirectories filtering out only files of 100 megabytes and above while removing files from the downloads folder
 

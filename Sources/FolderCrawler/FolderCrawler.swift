@@ -83,7 +83,6 @@ struct FolderCrawler : AsyncParsableCommand, @unchecked Sendable {
     } 
     
     @inlinable
-    nonisolated
     static func forRoot(folder: Folder, dataSize: Size, size: Double, exclude: String) async throws {
         let subpaths = try folder.crawlRoot()
         await withTaskGroup(of: [(Size,String,Double)].self) { group in 

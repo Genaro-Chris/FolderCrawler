@@ -152,6 +152,9 @@ internal final class Folder: @unchecked Sendable {
     /// - Parameter perms: POSIX bits
     /// - Returns: Converted string
     func changePermissions(_ perms: Int) -> String {
+        guard let perms = Int(String(perms, radix: 8)) else { 
+            return "---------" 
+        }
         var permToString = ""
         let permValue = [(4,"r"),(2,"w"),(1,"x")]
         for octal in String(perms) {

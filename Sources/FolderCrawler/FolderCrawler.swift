@@ -48,6 +48,7 @@ struct FolderCrawler : AsyncParsableCommand, @unchecked Sendable {
         }
    
         print("About to search \(folder.currentPath) directory", subDir ? "with its subdirectories" : "", exclude.isEmpty ? "" : "excluding \(exclude) and all its subdirectories")
+        print("Size \tPermissions \tFilePath")
 
         if (path == "/" && subDir) {   
             try await FolderCrawler.forRoot(folder: folder, dataSize: dataSize, size: size, exclude: exclude)

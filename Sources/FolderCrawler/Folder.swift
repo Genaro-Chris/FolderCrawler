@@ -108,6 +108,7 @@ internal final class Folder: @unchecked Sendable {
         let result = of.filter(with).filter { _, _, size in
             size >= from 
         }
+        print("Size \tPermissions \tFilePath")
         for msg in result {
             add()
             print(msg.1)
@@ -123,11 +124,12 @@ internal final class Folder: @unchecked Sendable {
         let of = of.filter { _,_, size in
             size >= from
         }
+        print("Size \tPermissions \tFilePath")
         for msg in of {
             add()
             print(msg.1)
         }
-    }    
+    }
 
     /// Checks for file size
     /// 
@@ -139,14 +141,34 @@ internal final class Folder: @unchecked Sendable {
             let attributes = try? fileManager.attributesOfItem(atPath: subpath)
             if let filesize = attributes?[.size] as? Double,
             let size = Size.init(filesize), 
+            let perms = attributes?[.posixPermissions] as? Int,
             let sizeDesc = size.sizer(filesize)?.rounded(.toNearestOrAwayFromZero) {  
-                result.append((size,"\(sizeDesc)\(size)\t\t\(subpath)",sizeDesc))
+                result.append((size,"\(sizeDesc)\(size)\t \(changePermissions(perms))  \t \(subpath)",sizeDesc))
             }
         }
         return result
     }
 
-
+    /// Changes permissions from its POSIX bits into human-readable string
+    ///
+    /// - Parameter perms: POSIX bits
+    /// - Returns: Converted string
+    func changePermissions(_ perms: Int) -> String {
+        var permToString = ""
+        let permValue = [(4,"r"),(2,"w"),(1,"x")]
+        for octal in String(perms) {
+            var intOctal = Int(String(octal))!
+            permValue.forEach { intValue, strValue in 
+                if intOctal >= intValue {
+                    permToString += strValue
+                    intOctal -= intValue
+                } else {
+                    permToString += "-"
+                }
+            }
+        }
+        return permToString
+    }
 }
 
 

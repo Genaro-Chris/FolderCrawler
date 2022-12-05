@@ -108,7 +108,6 @@ internal final class Folder: @unchecked Sendable {
         let result = of.filter(with).filter { _, _, size in
             size >= from 
         }
-        print("Size \tPermissions \tFilePath")
         for msg in result {
             add()
             print(msg.1)
@@ -124,7 +123,6 @@ internal final class Folder: @unchecked Sendable {
         let of = of.filter { _,_, size in
             size >= from
         }
-        print("Size \tPermissions \tFilePath")
         for msg in of {
             add()
             print(msg.1)

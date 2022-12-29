@@ -24,7 +24,7 @@ Run this command and wait for it to finish, to compile it for release mode
 
 ``swift build -c release``
 
-The compiled program will be created at ``/path/to/FolderCrawler/.build/release`` folder
+The compiled program will be stored at ``/path/to/FolderCrawler/.build/release`` folder
 
 ## Usage
 

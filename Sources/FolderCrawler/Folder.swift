@@ -134,17 +134,16 @@ internal final class Folder: @unchecked Sendable {
     /// - Parameter subpaths: array of filepaths
     /// - Returns: array of tuple containing the size, file name and the numerical file size
     func findSize(subpaths: [String]) -> [(Size, String, Double)] {
-        var result = [(Size, String, Double)]()
-        for subpath in subpaths {
+        subpaths.compactMap { subpath in
             let attributes = try? fileManager.attributesOfItem(atPath: subpath)
             if let filesize = attributes?[.size] as? Double,
             let size = Size.init(filesize), 
             let perms = attributes?[.posixPermissions] as? Int,
             let sizeDesc = size.sizer(filesize)?.rounded(.toNearestOrAwayFromZero) {  
-                result.append((size,"\(sizeDesc)\(size)\t \(changePermissions(perms))  \t \(subpath)",sizeDesc))
+                return (size,"\(sizeDesc)\(size)\t \(changePermissions(perms))  \t \(subpath)",sizeDesc)
             }
         }
-        return result
+        return nil
     }
 
     /// Changes permissions from its POSIX bits into human-readable string

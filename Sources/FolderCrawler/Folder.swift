@@ -138,7 +138,7 @@ internal final class Folder: @unchecked Sendable {
             let attributes = try? fileManager.attributesOfItem(atPath: subpath)
             if let filesize = attributes?[.size] as? Double,
             let size = Size.init(filesize), 
-            let perms = attributes?[.posixPermissions] as? Int,
+            let perms = attributes?[.posixPermissions] as? UInt,
             let sizeDesc = size.sizer(filesize)?.rounded(.toNearestOrAwayFromZero) {  
                 return (size,"\(sizeDesc)\(size)\t \(changePermissions(perms))  \t \(subpath)",sizeDesc)
             }
@@ -151,7 +151,10 @@ internal final class Folder: @unchecked Sendable {
     /// - Parameter perms: POSIX bits
     /// - Returns: Converted string
     func changePermissions(_ perms: Int) -> String {
-        guard let perms = Int(String(perms, radix: 8)) else { 
+        let perms = UInt(String(perms, radix:8).reduce("") { 
+            $0 + String($1)
+         })
+        guard let perms, perms > 99 else { 
             return "---------" 
         }
         var permToString = ""

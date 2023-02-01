@@ -48,14 +48,17 @@ struct FolderCrawler : AsyncParsableCommand, @unchecked Sendable {
         }
    
         print("About to search \(folder.currentPath) directory", subDir ? "with its subdirectories" : "", exclude.isEmpty ? "" : "excluding \(exclude) and all its subdirectories")
-        print("Size \tPermissions \tFilePath")
-
+        
         if (path == "/" && subDir) {   
             try await FolderCrawler.forRoot(folder: folder, dataSize: dataSize, size: size, exclude: exclude)
             return  
         }
 
-        let result: [(Size, String, Double)]
+        var result: [(Size, String, Double)]
+        defer { 
+            print("Size \tPermissions \tFilePath")
+            Self.listItems(of: size, dataSize: dataSize, folder: folder, result: result)
+        }
 
         if (path == "/run" && subDir) {
             var paths = try folder.crawlFolder()
@@ -63,7 +66,6 @@ struct FolderCrawler : AsyncParsableCommand, @unchecked Sendable {
                 paths = Self.filterOut(paths, exclude: exclude)
             }
             result = folder.findSize(subpaths: paths)
-            Self.listItems(of: size, dataSize: dataSize, folder: folder, result: result)
             return
         }
         if subDir {
@@ -72,14 +74,12 @@ struct FolderCrawler : AsyncParsableCommand, @unchecked Sendable {
                paths = Self.filterOut(paths, exclude: exclude)
             }
             result = folder.findSize(subpaths: paths)
-            Self.listItems(of: size, dataSize: dataSize, folder: folder, result: result)
-        } else {
+         } else {
             var paths = try folder.crawlFolder()
             if !exclude.isEmpty {
                paths = Self.filterOut(paths, exclude: exclude)
             }
             result = folder.findSize(subpaths: paths)
-            Self.listItems(of: size, dataSize: dataSize, folder: folder, result: result)
         }
     } 
     

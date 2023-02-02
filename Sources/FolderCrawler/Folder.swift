@@ -65,7 +65,14 @@ internal final class Folder: @unchecked Sendable {
         guard let paths, !paths.isEmpty else {
             throw FileError.permissionError(at: currentPath)
         }
-        return paths        
+        if currentPath == "/" {
+            return path.map {
+                "/" + $0
+            }
+        }
+        return paths.map {
+            self.currentPath + "/" +$0
+        }        
     }
 
     /// Crawls the argument passed recursively but if anything goes wrong it throws

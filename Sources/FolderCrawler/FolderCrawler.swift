@@ -26,19 +26,14 @@ struct FolderCrawler : AsyncParsableCommand, @unchecked Sendable {
 
     mutating func run() async throws {
         Task.detached(priority: .utility) { await SignalHandler.default.start() }
-        let (size, dataSize) = (size, dataSize)
+        let size = size
         let folder = Folder()
         if path.isEmpty {
             path = FileManager.default.currentDirectoryPath
         }
 
         if !exclude.isEmpty {
-            do {
-                try Folder().changeDirectory(to: exclude)
-            } catch {
-                Self.exit(withError: error)
-            }
-
+            try Folder().changeDirectory(to: exclude)
             exclude = String(URL(fileURLWithPath: exclude).absoluteString.trimmingPrefix("file://"))
         }
         

@@ -45,9 +45,9 @@ This preceding example will list out files in the current user home directory an
 
 ## Screenshots
 
-![App Screenshot](./img/Screenshot from 2023-02-04 02-46-57.png/)
+![App Screenshot](./img/Screenshot-1.png/)
 
-![App Screenshot](./img/Screenshot from 2023-02-04 02-47-32.png/)
+![App Screenshot](./img/Screenshot-2.png/)
 
 
 ## Feedback

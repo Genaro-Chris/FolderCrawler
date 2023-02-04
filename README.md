@@ -1,18 +1,16 @@
 # FolderCrawler
 
-[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) 
-<img src="https://img.shields.io/badge/Swift-5.7_5.8-Orange?style=flat-square" />
-<img src="https://img.shields.io/badge/platforms-macOS%20%7C%20Linux-lightgrey.svg" /> 
+![crates.io](https://img.shields.io/crates/v/$CRATE.svg)
 
-This project grew out the frustration of always remembering the different commands for listing out files and their respectively filesizes. I wrote this project using one of favourite programming languages: Swift, to make it easier to list out files and their filesizes.
+This project grew out the frustration of always remembering the different commands for listing out files and their respectively filesizes. I wrote this project using one of favourite programming languages: this time Rust, to make it easier to list out files and their filesizes.
 
-It was tested on a linux specifically on Kali linux :) but I think it's applicable on any *nix system capable of compiling swift code.
+It was tested on a linux specifically on Kali linux :) but I think it's applicable on any *nix system capable of compiling rust code.
 
 ## Requirements
 
-Any *nix system with a working Swift installation
+Any *nix system with a working Rust installation
 
-Swift 5.7 or higher.
+Rust 2021 or higher.
 
 
 ## Building
@@ -22,9 +20,9 @@ Change your working directory to the root of the FolderCrawler directory
 
 Run this command and wait for it to finish, to compile it for release mode
 
-``swift build -c release``
+``cargo build -r``
 
-The compiled program will be stored at ``/path/to/FolderCrawler/.build/release`` folder
+The compiled program will be stored at ``/path/to/FolderCrawler/target/release`` folder
 
 ## Usage
 

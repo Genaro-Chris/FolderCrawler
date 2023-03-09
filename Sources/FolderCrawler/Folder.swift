@@ -66,7 +66,7 @@ internal final class Folder: @unchecked Sendable {
             throw FileError.permissionError(at: currentPath)
         }
         if currentPath == "/" {
-            return path.map {
+            return paths.map {
                 "/" + $0
             }
         }
@@ -145,12 +145,13 @@ internal final class Folder: @unchecked Sendable {
             let attributes = try? fileManager.attributesOfItem(atPath: subpath)
             if let filesize = attributes?[.size] as? Double,
             let size = Size.init(filesize), 
-            let perms = attributes?[.posixPermissions] as? UInt,
+            let perms = attributes?[.posixPermissions] as? Int,
             let sizeDesc = size.sizer(filesize)?.rounded(.toNearestOrAwayFromZero) {  
                 return (size,"\(sizeDesc)\(size)\t \(changePermissions(perms))  \t \(subpath)",sizeDesc)
-            }
+            } 
+                return nil
         }
-        return nil
+       
     }
 
     /// Changes permissions from its POSIX bits into human-readable string

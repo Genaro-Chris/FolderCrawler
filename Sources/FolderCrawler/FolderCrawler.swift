@@ -49,7 +49,7 @@ struct FolderCrawler : AsyncParsableCommand, @unchecked Sendable {
             return  
         }
 
-        var result: [(Size, String, Double)]
+        var result: [(Size, String, Double)] = []
         defer { 
             print("Size \tPermissions \tFilePath")
             Self.listItems(of: size, dataSize: dataSize, folder: folder, result: result)

@@ -81,7 +81,13 @@ struct FolderCrawler : AsyncParsableCommand, @unchecked Sendable {
     @inlinable
     static func forRoot(folder: Folder, dataSize: Size, size: Double, exclude: String) async throws {
         let subpaths = try folder.crawlRoot()
-        await withTaskGroup(of: [(Size,String,Double)].self) { group in 
+        let channel = AsyncChannel<[(Size,String,Double)]>()
+        Task.detached(priority: .high) {
+            await channel.forEach { result in
+                listItems(of: size, dataSize: dataSize, folder: folder, result: result)
+            }
+        }
+        await withTaskGroup(of: Void.self) { group in 
             for subpath in subpaths {
                 if subpath == "/run" {
                     group.addTask { 
@@ -89,12 +95,12 @@ struct FolderCrawler : AsyncParsableCommand, @unchecked Sendable {
                         try? fold.changeDirectory(to: subpath)
                         let runpath = try? fold.crawlFolder().map { subpath + "/" + $0 }
                         guard var runpath, !runpath.isEmpty else {
-                            return []
+                            return 
                         }   
                         if !exclude.isEmpty {
                             runpath = filterOut(runpath, exclude: exclude)
                         }
-                        return fold.findSize(subpaths: runpath)
+                        await channel.send(fold.findSize(subpaths: runpath))
                     }
                 } else {
                     group.addTask {
@@ -102,18 +108,16 @@ struct FolderCrawler : AsyncParsableCommand, @unchecked Sendable {
                         try? fold.changeDirectory(to: subpath)
                         let paths = try? fold.crawlFolder(path: subpath)
                         guard var paths, !paths.isEmpty else {
-                            return []
+                            return 
                         }  
                         if !exclude.isEmpty {
                             paths = filterOut(paths, exclude: exclude)
                         }
-                        return fold.findSize(subpaths: paths)
+                        await channel.send(fold.findSize(subpaths: paths))
                     }
                 }
             }
-            await group.forEach { result in
-                listItems(of: size, dataSize: dataSize, folder: folder, result: result)
-            }
+           
         }
     }
 

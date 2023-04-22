@@ -79,7 +79,6 @@ struct FolderCrawler : AsyncParsableCommand, @unchecked Sendable {
         }
     } 
     
-    @inlinable
     static func forRoot(folder: Folder, dataSize: Size, size: Double, exclude: String) async throws {
         let subpaths = try folder.crawlRoot()
         let channel = AsyncChannel<[(Size,String,Double)]>()
@@ -104,7 +103,7 @@ struct FolderCrawler : AsyncParsableCommand, @unchecked Sendable {
                         await channel.send(fold.findSize(subpaths: runpath))
                     }
                 } else {
-                    group.addTask {
+                    group.addTask(priority: .high) {
                         let fold = Folder()
                         try? fold.changeDirectory(to: subpath)
                         let paths = try? fold.crawlFolder(path: subpath)
@@ -118,8 +117,9 @@ struct FolderCrawler : AsyncParsableCommand, @unchecked Sendable {
                     }
                 }
             }
-           
-        }
+           await group.waitForAll()
+           channel.finish()
+           }
     }
 
     static func filterOut(_ list: [String], exclude: String) -> [String] {

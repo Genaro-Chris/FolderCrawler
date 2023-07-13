@@ -12,7 +12,7 @@ It was tested on a linux specifically on Kali linux :) but I think it's applicab
 
 Any *nix system with a working Swift installation
 
-Swift 5.99 or higher.
+Swift 5.9 or higher.
 
 
 ## Building

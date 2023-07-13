@@ -1,0 +1,7 @@
+module FilesFinder {
+    header "classImpl.h"
+    header "bridging"
+
+    export *
+}
+

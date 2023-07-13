@@ -1,7 +1,7 @@
 # FolderCrawler
 
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) 
-<img src="https://img.shields.io/badge/Swift-5.7_5.8-Orange?style=flat-square" />
+<img src="https://img.shields.io/badge/Swift-5.9-Orange?style=flat-square" />
 <img src="https://img.shields.io/badge/platforms-macOS%20%7C%20Linux-lightgrey.svg" /> 
 
 This project grew out the frustration of always remembering the different commands for listing out files and their respectively filesizes. I wrote this project using one of favourite programming languages: Swift, to make it easier to list out files and their filesizes.
@@ -12,7 +12,7 @@ It was tested on a linux specifically on Kali linux :) but I think it's applicab
 
 Any *nix system with a working Swift installation
 
-Swift 5.7 or higher.
+Swift 5.99 or higher.
 
 
 ## Building
